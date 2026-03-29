@@ -3,7 +3,7 @@ package org.eudynexc.springbootexcercise.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.eudynexc.springbootexcercise.entities.dto.FilmDto;
-import org.eudynexc.springbootexcercise.entities.service.FilmService;
+import org.eudynexc.springbootexcercise.service.FilmService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,5 +40,26 @@ public class FilmController {
   @PostMapping
   public ResponseEntity<FilmDto> addFilm(@Valid @RequestBody FilmDto filmDto){
     return ResponseEntity.status(HttpStatus.CREATED).body(filmService.addFilm(filmDto));
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<Void> deleteById(@RequestParam int id){
+    filmService.deleteFilmById(id);
+    return ResponseEntity.noContent().build();
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<FilmDto> updateFilm(@RequestParam int id, @Valid @RequestBody FilmDto filmDto){
+    return ResponseEntity.ok(filmService.updateFilm(id, filmDto));
+  }
+
+  @GetMapping("/rental-braket")
+  public ResponseEntity<List<FilmDto>> filmPriceBracket(@RequestParam int low,@RequestParam int high){
+    return ResponseEntity.ok(filmService.filmsPriceBracket(low, high));
+  }
+
+  @GetMapping("/films-per-store")
+  public ResponseEntity<List<FilmDto>> findFilmsPerStore(@RequestParam int storeId,@RequestParam int filmId){
+    return ResponseEntity.ok(filmService.findFilmsPerStore(storeId,filmId));
   }
 }

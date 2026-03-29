@@ -1,4 +1,4 @@
-package org.eudynexc.springbootexcercise.entities.repository;
+package org.eudynexc.springbootexcercise.repository;
 
 import org.eudynexc.springbootexcercise.entities.Language;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-package org.eudynexc.springbootexcercise.entities.service;
+package org.eudynexc.springbootexcercise.service;
 
 import org.eudynexc.springbootexcercise.entities.dto.FilmDto;
 
@@ -10,4 +10,8 @@ public interface FilmService {
   List<FilmDto> findByRentalDuration(Integer rentalDuration);
   FilmDto findById(Integer filmId);
   FilmDto addFilm(FilmDto filmDto);
+  void deleteFilmById(int id);
+  FilmDto updateFilm(int id, FilmDto filmDto);
+  List<FilmDto> filmsPriceBracket(Integer low, Integer high);
+  List<FilmDto> findFilmsPerStore(int storeId, int filmId);
 }
