@@ -4,62 +4,75 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.eudynexc.springbootexcercise.entities.dto.FilmDto;
 import org.eudynexc.springbootexcercise.service.FilmService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/film")
 @RequiredArgsConstructor
 public class FilmController {
 
-  private FilmService filmService;
+  private final FilmService filmService;
 
   @GetMapping
-  public ResponseEntity<List<FilmDto>> findAllFilms(){
-    return ResponseEntity.ok(filmService.findAll());
+  public ResponseEntity<Page<FilmDto>> findAllFilms(
+          Pageable pageable
+  ) {
+    return ResponseEntity.ok(filmService.findAll(pageable));
   }
 
   @GetMapping("/rating")
-  public ResponseEntity<List<FilmDto>> findByRating(@RequestParam String rating){
-    return ResponseEntity.ok(filmService.findAllByRating(rating));
+  public ResponseEntity<Page<FilmDto>> findByRating(
+          @RequestParam String rating,
+          Pageable pageable) {
+    return ResponseEntity.ok(filmService.findAllByRating(rating, pageable));
   }
 
   @GetMapping("/rental-duration")
-  public ResponseEntity<List<FilmDto>> findByRentalDuration(@RequestParam Integer duration){
-    return ResponseEntity.ok(filmService.findByRentalDuration(duration));
+  public ResponseEntity<Page<FilmDto>> findByRentalDuration(
+          @RequestParam Integer duration,
+          Pageable pageable) {
+    return ResponseEntity.ok(filmService.findByRentalDuration(duration, pageable));
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<FilmDto> findById(@PathVariable Integer id){
+  public ResponseEntity<FilmDto> findById(@PathVariable Integer id) {
     return ResponseEntity.ok(filmService.findById(id));
   }
 
   @PostMapping
-  public ResponseEntity<FilmDto> addFilm(@Valid @RequestBody FilmDto filmDto){
+  public ResponseEntity<FilmDto> addFilm(@Valid @RequestBody FilmDto filmDto) {
     return ResponseEntity.status(HttpStatus.CREATED).body(filmService.addFilm(filmDto));
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteById(@RequestParam int id){
+  public ResponseEntity<Void> deleteById(@RequestParam int id) {
     filmService.deleteFilmById(id);
     return ResponseEntity.noContent().build();
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<FilmDto> updateFilm(@RequestParam int id, @Valid @RequestBody FilmDto filmDto){
+  public ResponseEntity<FilmDto> updateFilm(@RequestParam int id, @Valid @RequestBody FilmDto filmDto) {
     return ResponseEntity.ok(filmService.updateFilm(id, filmDto));
   }
 
   @GetMapping("/rental-braket")
-  public ResponseEntity<List<FilmDto>> filmPriceBracket(@RequestParam int low,@RequestParam int high){
-    return ResponseEntity.ok(filmService.filmsPriceBracket(low, high));
+  public ResponseEntity<Page<FilmDto>> filmPriceBracket(
+          @RequestParam BigDecimal low,
+          @RequestParam BigDecimal high,
+          Pageable pageable) {
+    return ResponseEntity.ok(filmService.filmsPriceBracket(low, high, pageable));
   }
 
   @GetMapping("/films-per-store")
-  public ResponseEntity<List<FilmDto>> findFilmsPerStore(@RequestParam int storeId,@RequestParam int filmId){
-    return ResponseEntity.ok(filmService.findFilmsPerStore(storeId,filmId));
+  public ResponseEntity<Integer> countCopiesAtStore(
+          @RequestParam int storeId,
+          @RequestParam int filmId) {
+    return ResponseEntity.ok(filmService.countCopiesAtStore(storeId, filmId));
   }
 }

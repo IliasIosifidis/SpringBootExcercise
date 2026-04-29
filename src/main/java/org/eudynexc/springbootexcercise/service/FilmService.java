@@ -1,17 +1,19 @@
 package org.eudynexc.springbootexcercise.service;
 
 import org.eudynexc.springbootexcercise.entities.dto.FilmDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 public interface FilmService {
-  List<FilmDto> findAll();
-  List<FilmDto> findAllByRating(String rating);
-  List<FilmDto> findByRentalDuration(Integer rentalDuration);
+  Page<FilmDto> findAll(Pageable pageable);
+  Page<FilmDto> findAllByRating(String rating, Pageable pageable);
+  Page<FilmDto> findByRentalDuration(Integer rentalDuration,Pageable pageable);
   FilmDto findById(Integer filmId);
   FilmDto addFilm(FilmDto filmDto);
   void deleteFilmById(int id);
   FilmDto updateFilm(int id, FilmDto filmDto);
-  List<FilmDto> filmsPriceBracket(Integer low, Integer high);
-  List<FilmDto> findFilmsPerStore(int storeId, int filmId);
+  Page<FilmDto> filmsPriceBracket(BigDecimal low, BigDecimal high, Pageable pageable);
+  int countCopiesAtStore(int storeId, int filmId );
 }

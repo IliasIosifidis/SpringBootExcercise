@@ -42,7 +42,7 @@ public class Customer {
   private Boolean active;
 
   @Column(nullable = false)
-  private LocalDateTime createdDate;
+  private LocalDateTime createDate;
 
   @Column
   private LocalDateTime lastUpdate;

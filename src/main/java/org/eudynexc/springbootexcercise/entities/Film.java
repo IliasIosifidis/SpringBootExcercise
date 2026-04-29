@@ -30,7 +30,7 @@ public class Film {
   @Column(columnDefinition = "text")
   private String description;
 
-  @Column
+  @Column(columnDefinition = "year")
   private Short releaseYear;
 
   @JoinColumn(name = "language_id")
@@ -41,13 +41,13 @@ public class Film {
   @ManyToOne
   private Language originalLanguage;
 
-  @Column(columnDefinition = "tinyint", nullable = false)
+  @Column(columnDefinition = "tinyint unsigned", nullable = false)
   private int rentalDuration;
 
   @Column(nullable = false)
   private BigDecimal rentalRate;
 
-  @Column
+  @Column(columnDefinition = "smallint unsigned")
   private Integer length;
 
   @Column(nullable = false)

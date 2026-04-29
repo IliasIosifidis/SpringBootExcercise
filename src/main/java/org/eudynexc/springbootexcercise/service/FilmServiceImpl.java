@@ -7,9 +7,12 @@ import org.eudynexc.springbootexcercise.entities.dto.FilmDto;
 import org.eudynexc.springbootexcercise.repository.ActorsRepository;
 import org.eudynexc.springbootexcercise.repository.FilmRepository;
 import org.eudynexc.springbootexcercise.repository.LanguageRepository;
+import org.eudynexc.springbootexcercise.util.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -19,34 +22,29 @@ public class FilmServiceImpl implements FilmService{
   private final LanguageRepository languageRepository;
   private final ActorsRepository actorsRepository;
 
-  public List<FilmDto> findAll(){
-    return filmRepository.findAll()
-            .stream()
-            .map(this::toDto)
-            .toList();
+  public Page<FilmDto> findAll(Pageable pageable){
+    return filmRepository.findAll(pageable)
+            .map(this::toDto);
   }
 
   @Override
-  public List<FilmDto> findAllByRating(String rating) {
-    return filmRepository.findAllByRating(rating)
-            .stream()
-            .map(this::toDto)
-            .toList();
+  public Page<FilmDto> findAllByRating(String rating, Pageable pageable) {
+    return filmRepository.findAllByRating(rating, pageable)
+            .map(this::toDto);
   }
 
   @Override
-  public List<FilmDto> findByRentalDuration(Integer rentalDuration) {
-    return filmRepository.findByRentalDuration(rentalDuration)
-            .stream()
-            .map(this::toDto)
-            .toList();
+  public Page<FilmDto> findByRentalDuration(Integer rentalDuration,Pageable pageable) {
+    return filmRepository.findByRentalDuration(rentalDuration, pageable)
+            .map(this::toDto);
+
   }
 
   @Override
   public FilmDto findById(Integer filmId) {
     return filmRepository.findById(filmId)
             .map(this::toDto)
-            .orElseThrow(() -> new RuntimeException("Film not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Film not found"));
   }
 
   @Override
@@ -59,44 +57,48 @@ public class FilmServiceImpl implements FilmService{
   @Override
   public void deleteFilmById(int id) {
     Film film = filmRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("film not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("film not found"));
     filmRepository.delete(film);
   }
 
   @Override
   public FilmDto updateFilm(int id, FilmDto filmDto) {
     Film film = filmRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Film not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("Film not found"));
     film.setTitle(filmDto.getTitle());
     film.setDescription(filmDto.getDescription());
+    film.setReleaseYear(filmDto.getReleaseYear());
     film.setRentalRate(filmDto.getRentalRate());
-    film.setFilmId(id);
+    film.setRentalDuration(filmDto.getRentalDuration());
     film.setLength(filmDto.getLength());
-    Film saved = filmRepository.save(film);
-    return toDto(saved);
+    film.setRating(filmDto.getRating());
+    film.setFilmId(id);
+
+    Language language = languageRepository.findById(filmDto.getLanguageId())
+            .orElseThrow(() -> new ResourceNotFoundException("Language not found"));
+    film.setLanguage(language);
+    return toDto(film);
   }
 
   @Override
-  public List<FilmDto> filmsPriceBracket(Integer low, Integer high) {
-    return filmRepository.findFilmsVyPriceBracket(low, high)
-            .stream()
-            .map(this::toDto)
-            .toList();
+  public Page<FilmDto> filmsPriceBracket(BigDecimal low, BigDecimal high, Pageable pageable) {
+    return filmRepository.findFilmsByPriceBracket(low, high, pageable)
+            .map(this::toDto);
   }
 
   @Override
-  public List<FilmDto> findFilmsPerStore(int storeId, int filmId) {
-    return filmRepository.findFilmsPerStore(storeId, filmId)
-            .stream()
-            .map(this::toDto)
-            .toList();
+  public int countCopiesAtStore(int storeId, int filmId) {
+    return filmRepository.countCopiesAtStore(storeId, filmId);
   }
 
   private FilmDto toDto(Film film) {
     FilmDto dto = new FilmDto();
+    dto.setRentalRate(film.getRentalRate());
+    dto.setRentalDuration(film.getRentalDuration());
+    dto.setReplacementCost(film.getReplacementCost());
+    dto.setLanguageId(film.getLanguage().getId());
     dto.setTitle(film.getTitle());
     dto.setDescription(film.getDescription());
-    dto.setReleaseYear(film.getReleaseYear());
     dto.setLength(film.getLength());
     dto.setRating(film.getRating());
     dto.setReleaseYear(film.getReleaseYear());
@@ -115,9 +117,9 @@ public class FilmServiceImpl implements FilmService{
     film.setReplacementCost(filmDto.getReplacementCost());
     // Language
     Optional<Language> language = languageRepository.findById(filmDto.getLanguageId());
-    film.setLanguage(language.orElseThrow(() -> new RuntimeException("language not found")));
+    film.setLanguage(language.orElseThrow(() -> new ResourceNotFoundException("language not found")));
     Optional<Language> originalLanguage = languageRepository.findById(filmDto.getOriginalLanguageId());
-    film.setOriginalLanguage(originalLanguage.orElseThrow(() -> new RuntimeException("Language not found")));
+    film.setOriginalLanguage(originalLanguage.orElseThrow(() -> new ResourceNotFoundException("Language not found")));
     //
     return film;
   }

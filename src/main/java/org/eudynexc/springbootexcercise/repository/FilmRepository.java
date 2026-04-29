@@ -1,21 +1,33 @@
 package org.eudynexc.springbootexcercise.repository;
 
 import org.eudynexc.springbootexcercise.entities.Film;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @Repository
 public interface FilmRepository extends JpaRepository<Film, Integer> {
-  List<Film> findAllByRating(String rating);
-  List<Film> findByRentalDuration(Integer rentalDuration);
+  Page<Film> findAllByRating(String rating, Pageable pageable);
+  Page<Film> findByRentalDuration(Integer rentalDuration, Pageable pageable);
 
-  @Query(value = "select * from film where rental_rate between :low and :high", nativeQuery = true)
-  List<Film> findFilmsVyPriceBracket(@Param("low") Integer low,@Param("high") Integer high);
+  @Query(
+          value = "select * from film where rental_rate between :low and :high",
+          countQuery = "Select count(*) from film where rental_rate between :low and :high",
+          nativeQuery = true)
+  Page<Film> findFilmsByPriceBracket(
+          @Param("low") BigDecimal low,
+          @Param("high") BigDecimal high,
+          Pageable pageable);
 
-  @Query(value = "select f.* from film f join inventory i on f.film_id = i. film_id where i.store_id = :storeId and f.film_id = :filmId", nativeQuery = true)
-  List<Film> findFilmsPerStore(@Param("storeId") int storeId, @Param("filmId") int filmId);
+  @Query(
+          value = "select count(*) from inventory where store_id = :storeId and film_id = :filmId",
+          nativeQuery = true)
+  int countCopiesAtStore(
+          @Param("storeId") int storeId,
+          @Param("filmId") int filmId);
 }
