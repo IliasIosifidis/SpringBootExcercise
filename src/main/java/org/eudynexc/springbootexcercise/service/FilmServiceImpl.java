@@ -91,6 +91,12 @@ public class FilmServiceImpl implements FilmService{
     return filmRepository.countCopiesAtStore(storeId, filmId);
   }
 
+  @Override
+  public Page<FilmDto> searchByTitle(String title, Pageable pageable) {
+    return filmRepository.findByTitleContainingIgnoreCase(title,pageable)
+            .map(this::toDto);
+  }
+
   private FilmDto toDto(Film film) {
     FilmDto dto = new FilmDto();
     dto.setRentalRate(film.getRentalRate());

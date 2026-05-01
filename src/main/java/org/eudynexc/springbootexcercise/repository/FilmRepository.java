@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 public interface FilmRepository extends JpaRepository<Film, Integer> {
   Page<Film> findAllByRating(String rating, Pageable pageable);
   Page<Film> findByRentalDuration(Integer rentalDuration, Pageable pageable);
+  Page<Film> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 
   @Query(
           value = "select * from film where rental_rate between :low and :high",

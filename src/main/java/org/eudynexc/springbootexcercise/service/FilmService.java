@@ -16,4 +16,7 @@ public interface FilmService {
   FilmDto updateFilm(int id, FilmDto filmDto);
   Page<FilmDto> filmsPriceBracket(BigDecimal low, BigDecimal high, Pageable pageable);
   int countCopiesAtStore(int storeId, int filmId );
+  Page<FilmDto> searchByTitle(String title, Pageable pageable);
+
+
 }

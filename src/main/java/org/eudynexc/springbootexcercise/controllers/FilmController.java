@@ -3,6 +3,8 @@ package org.eudynexc.springbootexcercise.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.eudynexc.springbootexcercise.entities.dto.FilmDto;
+import org.eudynexc.springbootexcercise.search.FilmDocument;
+import org.eudynexc.springbootexcercise.search.FilmSearchService;
 import org.eudynexc.springbootexcercise.service.FilmService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +20,7 @@ import java.math.BigDecimal;
 public class FilmController {
 
   private final FilmService filmService;
+  private final FilmSearchService filmSearchService;
 
   @GetMapping
   public ResponseEntity<Page<FilmDto>> findAllFilms(
@@ -74,5 +77,13 @@ public class FilmController {
           @RequestParam int storeId,
           @RequestParam int filmId) {
     return ResponseEntity.ok(filmService.countCopiesAtStore(storeId, filmId));
+  }
+
+  @GetMapping("/search")
+  public ResponseEntity<Page<FilmDocument>> searchByTitle(
+          @RequestParam String title,
+          Pageable pageable
+  ) {
+    return ResponseEntity.ok(filmSearchService.search(title, pageable));
   }
 }
