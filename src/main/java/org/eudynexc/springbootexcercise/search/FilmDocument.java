@@ -5,11 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.elasticsearch.annotations.Document;
-import org.springframework.data.elasticsearch.annotations.Field;
-import org.springframework.data.elasticsearch.annotations.FieldType;
+import org.springframework.data.elasticsearch.annotations.*;
 
 @Document(indexName = "films")
+@Setting(settingPath = "elasticsearch/film-settings.json")
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,7 +18,14 @@ public class FilmDocument {
   @Id
   private Integer id;
 
-  @Field(type = FieldType.Text)
+  @MultiField(
+          mainField = @Field(type = FieldType.Text),
+          otherFields = {
+                  @InnerField(suffix = "autocomplete", type = FieldType.Text,
+                  analyzer = "autocomplete_analyzer",
+                  searchAnalyzer = "standard")
+          }
+  )
   private String title;
 
   @Field(type = FieldType.Text)

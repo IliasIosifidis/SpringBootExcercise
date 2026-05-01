@@ -1,5 +1,6 @@
 package org.eudynexc.springbootexcercise.search;
 
+import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import lombok.RequiredArgsConstructor;
@@ -26,22 +27,36 @@ public class FilmSearchService {
             .query(queryText)
             .fields("title^3", "description")
     )._toQuery();
-
     // Bundle in one object
     NativeQuery searchQuery = NativeQuery.builder()
             .withQuery(multiMatch)
             .withPageable(pageable)
             .build();
-
     // ES returned search results
     SearchHits<FilmDocument> hits = elasticsearchOperations.search(searchQuery, FilmDocument.class);
-
     // Strips the metadata from hits (score, highlights etc.)
     List<FilmDocument> content = hits.stream()
             .map(SearchHit::getContent)
             .toList();
-
     // Construct a Page for the controller
     return new PageImpl<>(content, pageable, hits.getTotalHits());
+  }
+
+  public List<FilmDocument> autocomplete(String prefix, int limit){
+    Query matchQuery = MatchQuery.of(m ->m
+            .field("title-autocomplete")
+            .query(prefix)
+    )._toQuery();
+
+    NativeQuery searchQuery = NativeQuery.builder()
+            .withQuery(matchQuery)
+            .withMaxResults(limit)
+            .build();
+
+    SearchHits<FilmDocument> hits = elasticsearchOperations.search(searchQuery, FilmDocument.class);
+
+    return hits.stream()
+            .map(SearchHit::getContent)
+            .toList();
   }
 }

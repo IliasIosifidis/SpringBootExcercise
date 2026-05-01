@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/film")
@@ -82,8 +83,15 @@ public class FilmController {
   @GetMapping("/search")
   public ResponseEntity<Page<FilmDocument>> searchByTitle(
           @RequestParam String title,
-          Pageable pageable
-  ) {
+          Pageable pageable) {
     return ResponseEntity.ok(filmSearchService.search(title, pageable));
+  }
+
+  @GetMapping("/autocomplete")
+  public ResponseEntity<List<FilmDocument>> autocomplete(
+          @RequestParam String q,
+          @RequestParam(defaultValue = "10") int limit
+  ) {
+    return ResponseEntity.ok(filmSearchService.autocomplete(q, limit));
   }
 }
