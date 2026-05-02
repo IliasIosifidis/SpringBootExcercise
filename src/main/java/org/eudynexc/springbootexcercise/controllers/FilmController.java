@@ -81,10 +81,15 @@ public class FilmController {
   }
 
   @GetMapping("/search")
-  public ResponseEntity<Page<FilmDocument>> searchByTitle(
-          @RequestParam String title,
+  public ResponseEntity<Page<FilmDocument>> search(
+          @RequestParam(required = false) String title,
+          @RequestParam(required = false) String language,
+          @RequestParam(required = false) String priceBracket,
+          @RequestParam(required = false) String lengthBracket,
+          @RequestParam(required = false) List<String> rating,
           Pageable pageable) {
-    return ResponseEntity.ok(filmSearchService.search(title, pageable));
+    return ResponseEntity.ok(
+            filmSearchService.search(title, language, priceBracket, lengthBracket, rating, pageable));
   }
 
   @GetMapping("/autocomplete")

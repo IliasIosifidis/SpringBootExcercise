@@ -34,6 +34,15 @@ public class FilmDocument {
   @Field(type = FieldType.Keyword)
   private String rating;
 
+  @Field(type = FieldType.Keyword)
+  private String language;
+
+  @Field(type = FieldType.Double)
+  private Double rentalRate;
+
+  @Field(type = FieldType.Integer)
+  private Integer length;
+
   @Field(type = FieldType.Integer)
   private Integer releaseYear;
 }

@@ -42,6 +42,9 @@ public class FIlmIndexer implements CommandLineRunner {
             .title(film.getTitle())
             .description(film.getDescription())
             .rating(film.getRating())
+            .language(film.getLanguage() != null ? film.getLanguage().getName().trim() : null)
+            .rentalRate(film.getRentalRate() != null ? film.getRentalRate().doubleValue() : null)
+            .length(film.getLength() != null ? film.getLength() : null)
             .releaseYear(film.getReleaseYear() != null? film.getReleaseYear().intValue() : null)
             .build();
   }
