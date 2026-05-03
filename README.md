@@ -10,21 +10,21 @@ A Spring Boot REST API serving as the backend for a film catalog application bui
 
 ## Architecture
 ┌─────────────────┐
-│  Nuxt Frontend  │
-└────────┬────────┘
-│
-┌────────▼────────┐
-│  Spring Boot    │
-│      API        │
-└────────┬────────┘
-│
-┌──────────┴──────────┐
-▼                     ▼
-MySQL              Elasticsearch
-(truth, JPA)        (search index)
-▲                     ▲
-└─── indexer (CommandLineRunner)
-syncs on startup
+            │  Nuxt Frontend  │
+            └────────┬────────┘
+                     │
+            ┌────────▼────────┐
+            │  Spring Boot    │
+            │      API        │
+            └────────┬────────┘
+                     │
+          ┌──────────┴──────────┐
+          ▼                     ▼
+       MySQL              Elasticsearch
+    (truth, JPA)        (search index)
+          ▲                     ▲
+          └─── indexer (CommandLineRunner)
+               syncs on startup
 - **MySQL** holds the canonical Sakila data (1000 films, 200 actors, 16k rentals).
 - **Elasticsearch** holds a denormalized read-optimized index of films, populated from MySQL on application startup.
 - **Spring Boot API** routes single-entity reads to JPA, list/search/filter reads to Elasticsearch, and writes to MySQL with a follow-up sync to Elasticsearch (dual-write pattern).
