@@ -7,6 +7,7 @@ import org.eudynexc.springbootexcercise.entities.dto.FilmDto;
 import org.eudynexc.springbootexcercise.repository.ActorsRepository;
 import org.eudynexc.springbootexcercise.repository.FilmRepository;
 import org.eudynexc.springbootexcercise.repository.LanguageRepository;
+import org.eudynexc.springbootexcercise.search.FIlmIndexer;
 import org.eudynexc.springbootexcercise.util.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ public class FilmServiceImpl implements FilmService{
   private final FilmRepository filmRepository;
   private final LanguageRepository languageRepository;
   private final ActorsRepository actorsRepository;
+  private final FIlmIndexer fIlmIndexer;
 
   public Page<FilmDto> findAll(Pageable pageable){
     return filmRepository.findAll(pageable)
@@ -59,6 +61,8 @@ public class FilmServiceImpl implements FilmService{
     Film film = filmRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("film not found"));
     filmRepository.delete(film);
+    // ElasticSearch re-indexing on delete
+    fIlmIndexer.deleteFilm(id);
   }
 
   @Override
@@ -77,6 +81,9 @@ public class FilmServiceImpl implements FilmService{
     Language language = languageRepository.findById(filmDto.getLanguageId())
             .orElseThrow(() -> new ResourceNotFoundException("Language not found"));
     film.setLanguage(language);
+    // ElasticSearch Re-indexing on update
+    fIlmIndexer.indexFilm(film);
+
     return toDto(film);
   }
 

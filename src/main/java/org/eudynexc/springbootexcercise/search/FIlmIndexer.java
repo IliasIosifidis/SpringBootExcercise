@@ -36,6 +36,15 @@ public class FIlmIndexer implements CommandLineRunner {
     log.info("Indexed {} films into ElasticSearch.", documents.size());
   }
 
+  // Update the indexing on deleting
+  public void indexFilm(Film film){
+    filmSearchRepository.save(toDocument(film));
+  }
+
+  public void deleteFilm(int id){
+    filmSearchRepository.deleteById(id);
+  }
+
   private FilmDocument toDocument(Film film) {
     return FilmDocument.builder()
             .id(film.getFilmId())
